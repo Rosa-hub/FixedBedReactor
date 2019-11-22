@@ -17,8 +17,8 @@ classdef Property
       Tc=[282.5	469	154.58 304.35 647 126.19];
       Vc=[0.1311 0.1403 0.0735 0.0919 0.0559 0.0894];
       R=8.314;
-      v1=[-2 2 -1 0 0];
-      v2=[-1/3 0 -1 -2/3 -2/3];
+      v1=[-2 2 -1 0 0 0];
+      v2=[-1/3 0 -1 2/3 2/3 0];
       hf=[52.4 -52.63 0 -393.52 -241.83	0];
       dm=[0	1.94 0 0 1.8546	0];
       
@@ -149,6 +149,36 @@ classdef Property
            output2=viskm_LP*1e-3;
            output3=viski_HP*1e-3;
            output4=viskm_HP*1e-3;
+        end
+        
+        function [output1,output2]=dHr(obj)
+            T0=293.15;
+            dHr1=sum(obj.v1.*obj.hf);
+            dHr2=sum(obj.v2.*obj.hf);
+            
+            if obj.T~=T0
+                t=obj.T/1000;
+                t0=T0/1000;
+                
+              a1=sum(obj.v1.*obj.A);
+              b1=sum(obj.v1.*obj.B);
+              c1=sum(obj.v1.*obj.C);
+              d1=sum(obj.v1.*obj.D);
+              e1=sum(obj.v1.*obj.E);
+              
+              a2=sum(obj.v2.*obj.A);
+              b2=sum(obj.v2.*obj.B);
+              c2=sum(obj.v2.*obj.C);
+              d2=sum(obj.v2.*obj.D);
+              e2=sum(obj.v2.*obj.E);
+              
+              dHr1=dHr1+(a1*(t-t0)+b1/2*(t-t0)^2+c1/3*(t-t0)^3+d1/4*(t-t0)^4-e1/(t-t0));
+              dHr2=dHr2+(a2*(t-t0)+b2/2*(t-t0)^2+c2/3*(t-t0)^3+d2/4*(t-t0)^4-e2/(t-t0));
+                
+            end
+            
+            output1=dHr1;
+            output2=dHr2;
         end
     end
 end
