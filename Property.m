@@ -21,6 +21,7 @@ classdef Property
       v2=[-1/3 0 -1 2/3 2/3 0];
       hf=[52.4 -52.63 0 -393.52 -241.83	-74.87];
       dm=[0	1.94 0 0 1.8546	0];
+      vd=[41.04	47.15 12.22	28.12 10.73	25.14];
       
     end
     
@@ -179,6 +180,37 @@ classdef Property
             
             output1=dHr1;
             output2=dHr2;
+        end
+        
+        function output=Dim(obj)
+            
+            for i=1:length(obj.M)
+                for j=1:length(obj.M)
+                    
+                    if i==j
+                        Dc(i,j)=1;
+                        
+                    else
+                        MW=2*(1/obj.M(i)+1/obj.M(j))^-1;
+                        Dc(i,j)=0.00143*obj.T^1.75/(obj.P*1e-5*MW^0.5*(obj.vd(i)^(1/3)+obj.vd(j)^(1/3))^2);
+                    end
+                end 
+                
+                x=obj.X;
+                x(i)=0;
+                Dm(i)=(sum(x./Dc(i,:)))^-1;
+            end
+            
+            output=Dm*1e-4;
+        end
+        
+        function output=ReN(obj,w,d)
+            [~,~,~,v]=obj.visc;
+            Rog=obj.Densm;
+            Re=d*w*Rog/v*1e3;
+            
+            output=Re;
+            
         end
     end
 end
