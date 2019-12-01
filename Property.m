@@ -15,7 +15,7 @@ classdef Property
       E=[0.31554 0.38693 -0.007374 -0.136638 0.082139 0.678565];
       Pc=[50.6 71.91 50.43 73.4 220.64 46.1];
       Tc=[282.5	469	154.58 304.35 647 190.6];
-      Vc=[0.1311 0.1403 0.0735 0.0919 0.0559 0.0986];
+      Vc=[0.1311 0.1403 0.0735 0.0919 0.0559 0.0986]*100;
       R=8.314;
       v1=[-2 2 -1 0 0 0];
       v2=[-1/3 0 -1 2/3 2/3 0];
@@ -47,7 +47,7 @@ classdef Property
         end
         
         function output=Cm(obj)
-            output=obj.P/obj.R/obj.T;
+            output=obj.P./obj.R./obj.T;
         end
         
         function [output1,output2,output3,output4]=visc(obj)
@@ -154,8 +154,9 @@ classdef Property
         
         function [output1,output2]=dHr(obj)
             T0=298.15;
-            dHr1=sum(obj.v1.*obj.hf);
-            dHr2=sum(obj.v2.*obj.hf);
+            dHr1=sum(obj.v1.*obj.hf)*1000;
+            dHr2=sum(obj.v2.*obj.hf)*1000;
+            
             
             if obj.T~=T0
                 t=obj.T/1000;
@@ -204,13 +205,25 @@ classdef Property
             output=Dm*1e-4;
         end
         
-        function output=ReN(obj,w,d)
+        function output=ReN(obj,w,d,BVF)
             [~,~,~,v]=obj.visc;
             Rog=obj.Densm;
-            Re=d*w*Rog/v*1e3;
+            Re=d*w*Rog/(1-BVF)/v*1e3;
             
             output=Re;
             
         end
+        
+        function output=kg(obj,h,lam)
+            [~,~,~,v]=obj.visc;
+            cpm=obj.Cpm/obj.MWm*1000;
+            Pr=cpm*v/1000/lam;
+            Sc=v/obj.Densm./obj.Dim;
+            
+            kgc=h/cpm*Pr^(2/3)/obj.Densm./Sc.^(2/3);
+            
+            output=kgc;
+        end
+        
     end
 end
