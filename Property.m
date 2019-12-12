@@ -1,5 +1,15 @@
 classdef Property
-    
+%---///---Colekcia funkcii pre výpo?et vlastností plynnej zmesi---///--- 
+% Obsah:
+% Cpm - výpo?et zmesného Cp
+% Densm - výpo?et zmesnej hustoty
+% MWm - výpo?et zmesnej móloveh hmotnosti
+% Cm - výpo?et celkovej mólovej koncentrácie
+% visc - výpo?et nízko/vysoko tlakej viskozity zložiek/zmesy podla Lucasa
+% dHr - výpo?et reka?nej entalpie pod?a Hessovho zákona + Kirchhofov zákon
+% Dim - výpo?et zmesného difúzneho koeficientu pod?a Fullerovej rovnice
+% kg - výpo?et koeficientov prestupu látky plyn-?astice
+
     properties
         P{mustBeNumeric}
         T{mustBeNumeric}
@@ -146,10 +156,10 @@ classdef Property
            FQm=(1+(FQ0m-1).*(Ym.^-1-0.007.*(log(Ym)).^4))./FQ0m;
            viskm_HP=Z2m.*Fpm.*FQm./Epsm;
            
-           output1=viski_LP*1e-3;
-           output2=viskm_LP*1e-3;
-           output3=viski_HP*1e-3;
-           output4=viskm_HP*1e-3;
+           output1=viski_LP*1e-4;
+           output2=viskm_LP*1e-4;
+           output3=viski_HP*1e-4;
+           output4=viskm_HP*1e-4;
         end
         
         function [output1,output2]=dHr(obj)
@@ -189,11 +199,11 @@ classdef Property
                 for j=1:length(obj.M)
                     
                     if i==j
-                        Dc(i,j)=1;
+                        Dc(i,j)=1e-6;
                         
                     else
                         MW=2*(1/obj.M(i)+1/obj.M(j))^-1;
-                        Dc(i,j)=0.00143*obj.T^1.75/(obj.P*1e-5*MW^0.5*(obj.vd(i)^(1/3)+obj.vd(j)^(1/3))^2);
+                        Dc(i,j)=0.00143*obj.T^1.75/(obj.P*1e-5*MW^0.5*(obj.vd(i)^(1/3)+obj.vd(j)^(1/3))^2)*1e-4;
                     end
                 end 
                 
@@ -202,7 +212,7 @@ classdef Property
                 Dm(i)=(sum(x./Dc(i,:)))^-1;
             end
             
-            output=Dm*1e-4;
+            output=Dm;
         end
         
         function output=ReN(obj,w,d,BVF)
